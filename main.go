@@ -28,14 +28,12 @@ type Hub struct {
 	sync.Mutex
 }
 
-// --- Telegram integration ---
 var telegramBot *bot.Bot
 
-// Укажите chatID вашей группы/канала (например, -1001234567890 для супергруппы)
 var telegramChatID int64 = 0
 
 func initTelegram() {
-	token := "7086553014:AAFOcLmpEW9elip9q0vHgDQEGJTlJ8B4OnM" // ВРЕМЕННО! После теста удалите из кода!
+	token := "7086553014:AAFOcLmpEW9elip9q0vHgDQEGJTlJ8B4OnM" //Для тестировки и последующего удаления(по желанию)
 	if token == "" {
 		log.Println("[Telegram] TELEGRAM_BOT_TOKEN not set, Telegram integration disabled")
 		return
@@ -47,7 +45,7 @@ func initTelegram() {
 	}
 	telegramBot = b
 	log.Println("[Telegram] Bot initialized")
-	// Тестовая отправка сообщения в канал, если chatID указан
+
 	if telegramChatID != 0 {
 		sendToTelegram("✅ Telegram бот успешно инициализирован и готов принимать сообщения из чата!")
 	}
@@ -132,7 +130,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		nick = r.URL.Query().Get("nick")
 	}
 	if nick == "" {
-		// fallback: пробуем из тела
+
 		var tmp struct{ Nick string }
 		json.NewDecoder(r.Body).Decode(&tmp)
 		nick = tmp.Nick
@@ -171,7 +169,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 			"text": data.Text,
 			"nick": data.Nick,
 		})
-		// Отправка в Telegram
+
 		if data.Text != "" {
 			sendToTelegram(fmt.Sprintf("[%s]: %s", data.Nick, data.Text))
 		}
